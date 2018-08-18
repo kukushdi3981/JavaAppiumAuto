@@ -117,6 +117,28 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void test_ex2_check_element_text()
+    {
+        waitElementAndClick(
+                By.xpath("//*[contains(@text,'Search Wikipedia')]"),
+                "Can't find Search Wikipedia input",
+                5
+        );
+
+        String text = getTextOfElement(
+                By.id("org.wikipedia:id/search_src_text"),
+                "Can't find seach input"
+        );
+
+        Assert.assertEquals(
+                "Get unexpected text in search input",
+                "Search…",
+                text
+        );
+
+    }
+
     private WebElement waitElementPresent(By by, String error_message, long timeoutSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
@@ -147,5 +169,12 @@ public class FirstTest {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
         wait.withMessage(error_msg + "\n");
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
+    }
+
+    private String getTextOfElement(By by, String error_msg)
+    {
+        WebElement element = waitElementPresent(by, error_msg);
+        return element.getAttribute("text");
+
     }
 }
