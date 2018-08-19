@@ -137,6 +137,47 @@ public class FirstTest {
 
     }
 
+    @Test
+    public void test_ex3_CancelSearchResults()
+    {
+        waitElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Can't find 'Search Wikipedia input'",
+                5
+        );
+
+        waitElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                "Appium",
+                "Can't find seach input",
+                5
+        );
+
+        List<WebElement> search_results = waitElementsPresent(
+                By.id("org.wikipedia:id/page_list_item_container"),
+                "Can't find search results",
+                15
+
+        );
+
+        int results_count = search_results.size();
+        System.out.println("search result count = " + results_count);
+        Assert.assertTrue(results_count > 1);
+
+        waitElementAndClick(
+                By.id("org.wikipedia:id/search_close_btn"),
+                "Can't find X to cancel search",
+                5
+        );
+
+        boolean result = waitElementNotPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@resource-id='org.wikipedia:id/page_list_item_title']"),
+                "Search result is still present on the page",
+                7
+        );
+
+    }
+
     private WebElement waitElementPresent(By by, String error_message, long timeoutSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
@@ -174,5 +215,12 @@ public class FirstTest {
         WebElement element = waitElementPresent(by, error_msg);
         return element.getAttribute("text").equals(expect_text);
 
+    }
+
+    private List<WebElement> waitElementsPresent(By by, String error_msg, long timeoutSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
+        wait.withMessage(error_msg + "\n");
+        return  wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
     }
 }
