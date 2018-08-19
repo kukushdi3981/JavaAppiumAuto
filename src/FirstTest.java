@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
 
@@ -126,16 +127,13 @@ public class FirstTest {
                 5
         );
 
-        String text = getTextOfElement(
+        boolean result = checkTextOfElement(
                 By.id("org.wikipedia:id/search_src_text"),
-                "Can't find seach input"
+                "Can't find seach input",
+                "Search…"
         );
 
-        Assert.assertEquals(
-                "Get unexpected text in search input",
-                "Search…",
-                text
-        );
+        Assert.assertTrue("Get unexpected text in search input", result);
 
     }
 
@@ -171,10 +169,10 @@ public class FirstTest {
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(by));
     }
 
-    private String getTextOfElement(By by, String error_msg)
+    private boolean checkTextOfElement(By by, String error_msg, String expect_text)
     {
         WebElement element = waitElementPresent(by, error_msg);
-        return element.getAttribute("text");
+        return element.getAttribute("text").equals(expect_text);
 
     }
 }
