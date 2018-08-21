@@ -162,7 +162,7 @@ public class FirstTest {
 
         int results_count = search_results.size();
         System.out.println("search result count = " + results_count);
-        Assert.assertTrue(results_count > 1);
+        Assert.assertTrue("Get empty seach result list!",results_count > 1);
 
         waitElementAndClick(
                 By.id("org.wikipedia:id/search_close_btn"),
@@ -176,6 +176,39 @@ public class FirstTest {
                 7
         );
 
+    }
+
+    @Test
+    public void test_ex4_CheckSearchResults() {
+        String searchTerm = "Java";
+
+        waitElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Can't find 'Search Wikipedia input'",
+                5
+        );
+
+        waitElementAndSendKeys(
+                By.xpath("//*[contains(@text,'Search…')]"),
+                searchTerm,
+                "Can't find seach input",
+                5
+        );
+
+        List<WebElement> search_results = waitAllElementsPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@resource-id='org.wikipedia:id/page_list_item_title']"),
+                "Can't find search results",
+                15
+        );
+
+        System.out.println("search result count = " + search_results.size());
+
+        for(int i=0;i<search_results.size();i++){
+            String text = search_results.get(i).getText();
+            //System.out.println("Element text = " + text);
+
+            Assert.assertTrue("Search result validation failed at element [+ i +].", text.contains(searchTerm));
+        }
     }
 
     private WebElement waitElementPresent(By by, String error_message, long timeoutSeconds)
@@ -223,4 +256,12 @@ public class FirstTest {
         wait.withMessage(error_msg + "\n");
         return  wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(by));
     }
+
+    private List<WebElement> waitAllElementsPresent(By by, String error_msg, long timeoutSeconds)
+    {
+        WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
+        wait.withMessage(error_msg + "\n");
+        return  wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by));
+    }
+
 }
