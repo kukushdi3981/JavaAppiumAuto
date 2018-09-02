@@ -505,6 +505,204 @@ public class FirstTest {
         );
     }
 
+    @Test
+    public void test_ex5_SaveTwoArticleToListAndThenDeleteOne()
+    {
+        // add first article
+        waitElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        waitElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Java",
+                "Cannot find search input",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
+                "Cannot find 'Object-oriented programming language",
+                5
+        );
+
+        waitElementPresent(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "Cannot find article tittle",
+                15
+        );
+
+        waitElementAndClick(
+                By.xpath("//android.widget.ImageView[@content-desc='More options']"),
+                "Cannot find 'More options' button",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@text='Add to reading list']"),
+                "Cannot find button to 'Add to reading list'",
+                5
+        );
+
+        waitElementAndClick(
+                By.id("org.wikipedia:id/onboarding_button"),
+                "Cannot find 'GOT IT' button",
+                5
+        );
+
+        waitElementAndClear(
+                By.id("org.wikipedia:id/text_input"),
+                "Cannot find 'Name of the list' field",
+                5
+        );
+
+        String nameOfFolder = "My test articles";
+
+        waitElementAndSendKeys(
+                By.id("org.wikipedia:id/text_input"),
+                nameOfFolder,
+                "Cannot put text into 'Name of the list' field",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@text='OK']"),
+                "Cannot find 'OK' button",
+                5
+        );
+        waitElementAndClick(
+                By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"),
+                "Cannot find 'X' button",
+                5
+        );
+
+        //add second article
+        waitElementAndClick(
+                By.id("org.wikipedia:id/search_container"),
+                "Cannot find 'Search Wikipedia' input",
+                5
+        );
+
+        String second_acticle_name = "Appium";
+        waitElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                second_acticle_name,
+                "Cannot find search input",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='" + second_acticle_name + "']"),
+                "Cannot find '" + second_acticle_name + "' article",
+                5
+        );
+
+        waitElementPresent(
+                By.id("org.wikipedia:id/view_page_title_text"),
+                "Cannot find article tittle",
+                15
+        );
+
+        waitElementAndClick(
+                By.xpath("//android.widget.ImageView[@content-desc='More options']"),
+                "Cannot find 'More options' button",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@text='Add to reading list']"),
+                "Cannot find button to 'Add to reading list'",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@text='" + nameOfFolder + "']"),
+                "Cannot find " + nameOfFolder + " list",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"),
+                "Cannot find 'X' button",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"),
+                "Cannot find 'My lists' button",
+                5
+        );
+
+        waitElementAndClick(
+                By.xpath("//*[@text='" + nameOfFolder + "']"),
+                "Cannot find " + nameOfFolder + " list",
+                5
+        );
+
+        // check that in list 2 articles
+        waitElementPresent(
+                By.xpath("//*[@text='Java (programming language)']"),
+                "Cannot find 'Java (programming language)' article in My reading list"
+        );
+
+        waitElementPresent(
+                By.xpath("//*[@text='"+ second_acticle_name + "']"),
+                "Cannot find '" + second_acticle_name + "' article in My reading list"
+        );
+
+        // delete first article from list
+        swipeElementToLeft(
+                By.xpath("//*[@text='Java (programming language)']"),
+                "Cannot find 'Java (programming language)' article in My reading list"
+        );
+
+        waitElementNotPresent(
+                By.xpath("//*[@text='Java (programming language)']"),
+                "Cannot delete saved article",
+                5
+        );
+
+        waitElementPresent(
+                By.xpath("//*[@text='" + second_acticle_name + "']"),
+                "Cannot find '" + second_acticle_name + "' article in My reading list"
+        );
+
+        //check title of existing article
+        waitElementAndClick(
+                By.xpath("//*[@text='" + second_acticle_name + "']"),
+                "Cannot find '" + second_acticle_name + "' article in My reading list",
+                5
+        );
+
+        /*
+        waitElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
+                "Cannot find article tittle",
+                5
+        );
+
+        WebElement tittleElement = driver.findElement(
+                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']")
+        );*/
+
+        String articleTittle = waitElementAndGetAttribute(
+                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
+                "text",
+                "Cannot find article tittle",
+                10
+        );
+
+                //tittleElement.getAttribute("text");
+
+        Assert.assertEquals(
+                "We see unexpected tittle!",
+                second_acticle_name,
+                articleTittle
+        );
+    }
+
     private WebElement waitElementPresent(By by, String error_message, long timeoutSeconds)
     {
         WebDriverWait wait = new WebDriverWait(driver, timeoutSeconds);
