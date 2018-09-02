@@ -676,25 +676,12 @@ public class FirstTest {
                 5
         );
 
-        /*
-        waitElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
-                "Cannot find article tittle",
-                5
-        );
-
-        WebElement tittleElement = driver.findElement(
-                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']")
-        );*/
-
         String articleTittle = waitElementAndGetAttribute(
                 By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
                 "text",
                 "Cannot find article tittle",
                 10
         );
-
-                //tittleElement.getAttribute("text");
 
         Assert.assertEquals(
                 "We see unexpected tittle!",
@@ -835,4 +822,5 @@ public class FirstTest {
         WebElement element = waitElementPresent(by, errorMessage, timeoutInSeconds);
         return element.getAttribute(attribute);
     }
+
 }
