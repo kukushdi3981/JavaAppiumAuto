@@ -8,7 +8,13 @@ public class ArticlePageObject extends MainPageObject{
 
     private static final String
         TITLE = "org.wikipedia:id/view_page_title_text",
-        FOOTER_ELEMENT = "//*[@text='View page in browser']";
+        FOOTER_ELEMENT = "//*[@text='View page in browser']",
+        OPTIONS_BUTTON = "//android.widget.ImageView[@content-desc='More options']",
+        OPTION_ADD_TO_MY_LIST_BTN = "//*[@text='Add to reading list']",
+        ADD_TO_MY_LIST_OVERLAY = "org.wikipedia:id/onboarding_button",
+        MY_LIST_NAME_INPUT = "org.wikipedia:id/text_input",
+        MY_LIST_OK_BUTTON = "//*[@text='OK']",
+        CLOSE_ARTICLE_BTN = "//android.widget.ImageButton[@content-desc='Navigate up']";
 
     public ArticlePageObject(AppiumDriver driver)
     {
@@ -29,5 +35,34 @@ public class ArticlePageObject extends MainPageObject{
     public void swipeToFooter()
     {
         this.swipeUpToFindElement(By.xpath(FOOTER_ELEMENT), "Can't find the end of arcticle", 20);
+    }
+
+    public void addArticleToMyList(String name_of_folder)
+    {
+        this.waitElementAndClick(
+                By.xpath(OPTIONS_BUTTON),"Cannot find 'More options' button", 5);
+
+        this.waitElementAndClick(
+                By.xpath(OPTION_ADD_TO_MY_LIST_BTN),"Cannot find button to 'Add to reading list'", 5);
+
+        this.waitElementAndClick(
+                By.id(ADD_TO_MY_LIST_OVERLAY),"Cannot find 'GOT IT' button",5);
+
+        this.waitElementAndClear(
+                By.id(MY_LIST_NAME_INPUT),"Cannot find 'Name of the list' field",5);
+
+        this.waitElementAndSendKeys(
+                By.id(MY_LIST_NAME_INPUT), name_of_folder,"Cannot put text into 'Name of the list' field",5);
+
+        this.waitElementAndClick(
+                By.xpath(MY_LIST_OK_BUTTON),"Cannot press 'OK' button",5);
+
+    }
+
+    public void closeArticle()
+    {
+        this.waitElementAndClick(
+                By.xpath(CLOSE_ARTICLE_BTN),"Cannot find 'X' button",5);
+
     }
 }

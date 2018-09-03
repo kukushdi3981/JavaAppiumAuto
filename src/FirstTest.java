@@ -1,7 +1,5 @@
 import lib.CoreTestCase;
-import lib.ui.ArticlePageObject;
-import lib.ui.MainPageObject;
-import lib.ui.SearchPageObject;
+import lib.ui.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -173,122 +171,37 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testSaveFirstArticleToMyList()
     {
-        MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input",
-                5
-        );
-        MainPageObject.waitElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                "Java",
-                "Cannot find search input",
-                5
-        );
-        MainPageObject.waitElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find 'Object-oriented programming language",
-                5
-        );
-        MainPageObject.waitElementPresent(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "Cannot find article tittle",
-                15
-        );
-        MainPageObject.waitElementAndClick(
-                By.xpath("//android.widget.ImageView[@content-desc='More options']"),
-                "Cannot find 'More options' button",
-                5
-        );
-        MainPageObject.waitElementAndClick(
-                By.xpath("//*[@text='Add to reading list']"),
-                "Cannot find button to 'Add to reading list'",
-                5
-        );
-        MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/onboarding_button"),
-                "Cannot find 'GOT IT' button",
-                5
-        );
-        MainPageObject.waitElementAndClear(
-                By.id("org.wikipedia:id/text_input"),
-                "Cannot find 'Name of the list' field",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
+
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        ArticlePageObject.waitTitleElement();
+        String article_title = ArticlePageObject.getArticleTitle();
         String name_of_folder = "Learning programming";
+        ArticlePageObject.addArticleToMyList(name_of_folder);
+        ArticlePageObject.closeArticle();
 
-        MainPageObject.waitElementAndSendKeys(
-                By.id("org.wikipedia:id/text_input"),
-                name_of_folder,
-                "Cannot put text into 'Name of the list' field",
-                5
-        );
+        NavigateUI NavigateUI = new NavigateUI(driver);
+        NavigateUI.clickMyLists();
 
-        MainPageObject.waitElementAndClick(
-                By.xpath("//*[@text='OK']"),
-                "Cannot press 'OK' button",
-                5
-        );
-
-        MainPageObject.waitElementAndClick(
-                By.xpath("//android.widget.ImageButton[@content-desc='Navigate up']"),
-                "Cannot find 'X' button",
-                5
-        );
-
-        MainPageObject.waitElementAndClick(
-                By.xpath("//android.widget.FrameLayout[@content-desc='My lists']"),
-                "Cannot find 'My lists' navigation button",
-                5
-        );
-
-        MainPageObject.waitElementAndClick(
-                By.xpath("//*[@text='" + name_of_folder + "']"),
-                "Cannot find 'Learning programming' list",
-                5
-        );
-
-        MainPageObject.swipeElementToLeft(
-                By.xpath("//*[@text='Java (programming language)']"),
-                "Cannot find saved article in My reading list"
-        );
-
-        MainPageObject.waitElementNotPresent(
-                By.xpath("//*[@text='Java (programming language)']"),
-                "Cannot delete saved article",
-                5
-        );
+        MyListsPageObject MyListsPageObject = new MyListsPageObject(driver);
+        MyListsPageObject.openFolderByName(name_of_folder);
+        MyListsPageObject.swipeArticleToDelete(article_title);
     }
 
     @Test
     public void testAmountOfNotEmptySearch()
     {
-        MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
+        SearchPageObject.initSearchInput();
         String searchLine = "Linkin park discography";
+        SearchPageObject.typeSearchLine(searchLine);
 
-        MainPageObject.waitElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                searchLine,
-                "Cannot find search input",
-                5
-        );
-
-        String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']";
-
-        MainPageObject.waitElementPresent(
-                By.xpath(searchResultLocator),
-                "Cannot find anything by the request " + searchLine,
-                15
-        );
-
-        int amounOfSearchResults = MainPageObject.getAmountOfElements(
-                By.xpath(searchResultLocator)
-        );
+        int amounOfSearchResults = SearchPageObject.getAmountOfFoundAticles();
 
         Assert.assertTrue(
                 "Found to few results",
@@ -299,38 +212,46 @@ public class FirstTest extends CoreTestCase {
     @Test
     public void testNoResultsFounds()
     {
-        MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input",
-                5
-        );
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
 
+        SearchPageObject.initSearchInput();
         String searchLine = "zxcvasdfqwer";
-
-        MainPageObject.waitElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                searchLine,
-                "Cannot find search input",
-                5
-        );
-
-        String searchResultLocator = "//*[@resource-id='org.wikipedia:id/search_results_list']/*[@resource-id='org.wikipedia:id/page_list_item_container']";
-        String emptyResultLabel = "//*[@text='No results found']";
-
-        MainPageObject.waitElementPresent(
-                By.xpath(emptyResultLabel),
-                "Cannot find anything by the request " + searchLine,
-                15
-        );
-        MainPageObject.assertElementNotPresent(
-                By.xpath(searchResultLocator),
-                "Found some results by request by request" + searchLine
-        );
+        SearchPageObject.typeSearchLine(searchLine);
+        SearchPageObject.waitEmptyResultsLabel();
+        SearchPageObject.assertThereNoResultOfSearch();
     }
 
     @Test
     public void testChangeScreenOrientationOnSearchResults()
     {
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
+
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        String tittleBeforeRotation = ArticlePageObject.getArticleTitle();
+        //поворачиваем первый раз
+        this.rotateScreenLandscape();
+        String tittleAfterRotation = ArticlePageObject.getArticleTitle();
+
+        Assert.assertEquals(
+                "Article tittle have been changed after screen rotation",
+                tittleBeforeRotation,
+                tittleAfterRotation
+        );
+        //поворачиваем второй раз
+        this.rotateScreenPortrait();
+        String tittleAfterSecondRotation = ArticlePageObject.getArticleTitle();
+
+        Assert.assertEquals(
+                "Article tittle have been changed after second screen rotation",
+                tittleBeforeRotation,
+                tittleAfterSecondRotation
+        );
+
+        /*
         MainPageObject.waitElementAndClick(
                 By.id("org.wikipedia:id/search_container"),
                 "Cannot find 'Search Wikipedia' input",
@@ -389,13 +310,21 @@ public class FirstTest extends CoreTestCase {
                 "Article tittle have been changed after second screen rotation",
                 tittleBeforeRotation,
                 tittleAfterSecondRotation
-        );
+        );*/
     }
 
     @Test
     public void testCheckSearchArticleInBackground()
     {
-        MainPageObject.waitElementAndClick(
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.waitSearchResult("Object-oriented programming language");
+        this.backgroundApp(2);
+        SearchPageObject.waitSearchResult("Object-oriented programming language");
+
+        /*MainPageObject.waitElementAndClick(
                 By.id("org.wikipedia:id/search_container"),
                 "Cannot find 'Search Wikipedia' input",
                 5
@@ -420,7 +349,7 @@ public class FirstTest extends CoreTestCase {
                 By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
                 "Cannot find 'Object-oriented programming language' article after returning from background",
                 5
-        );
+        );*/
     }
 
     @Test
