@@ -1,9 +1,7 @@
 import lib.CoreTestCase;
 import lib.ui.*;
-import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ScreenOrientation;
 import org.openqa.selenium.WebElement;
 import java.util.List;
 
@@ -15,48 +13,6 @@ public class FirstTest extends CoreTestCase {
     {
         super.setUp();
         MainPageObject = new MainPageObject(driver);
-    }
-
-    @Test
-    public void testSearch()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitSearchResult("Object-oriented programming language");
-    }
-
-    @Test
-    public void testCancelSearch()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        //SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitCancelButtonToAppear();
-        SearchPageObject.clickCancelSearchBtn();
-        SearchPageObject.waitCancelButtonToDisappear();
-    }
-
-    @Test
-    public void testCompareArticleTitle()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        ArticlePageObject.waitTitleElement();
-        String acticle_title = ArticlePageObject.getArticleTitle();
-
-        Assert.assertEquals(
-                "Get unexpected title",
-                "Java (programming language)",
-                acticle_title
-        );
     }
 
     @Test
@@ -74,7 +30,7 @@ public class FirstTest extends CoreTestCase {
                 "Search…"
         );
 
-        Assert.assertTrue("Get unexpected text in search input", result);
+        assertTrue("Get unexpected text in search input", result);
 
     }
 
@@ -104,7 +60,7 @@ public class FirstTest extends CoreTestCase {
         int results_count = search_results.size();
         System.out.println("search result count = " + results_count);
 
-        Assert.assertTrue("Get empty seach result list!",results_count > 1);
+        assertTrue("Get empty seach result list!",results_count > 1);
 
         MainPageObject.waitElementAndClick(
                 By.id("org.wikipedia:id/search_close_btn"),
@@ -149,207 +105,8 @@ public class FirstTest extends CoreTestCase {
             String text = search_results.get(i).getText();
             //System.out.println("Element text = " + text);
 
-            Assert.assertTrue("Search result validation failed at element [+ i +].", text.contains(searchTerm));
+            assertTrue("Search result validation failed at element [+ i +].", text.contains(searchTerm));
         }
-    }
-
-    @Test
-    public void testSwipeArticle()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Appium");
-        SearchPageObject.clickByArticleSubstring("Appium");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        ArticlePageObject.waitTitleElement();
-        ArticlePageObject.swipeToFooter();
-
-    }
-
-    @Test
-    public void testSaveFirstArticleToMyList()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        ArticlePageObject.waitTitleElement();
-        String article_title = ArticlePageObject.getArticleTitle();
-        String name_of_folder = "Learning programming";
-        ArticlePageObject.addArticleToMyList(name_of_folder);
-        ArticlePageObject.closeArticle();
-
-        NavigateUI NavigateUI = new NavigateUI(driver);
-        NavigateUI.clickMyLists();
-
-        MyListsPageObject MyListsPageObject = new MyListsPageObject(driver);
-        MyListsPageObject.openFolderByName(name_of_folder);
-        MyListsPageObject.swipeArticleToDelete(article_title);
-    }
-
-    @Test
-    public void testAmountOfNotEmptySearch()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        String searchLine = "Linkin park discography";
-        SearchPageObject.typeSearchLine(searchLine);
-
-        int amounOfSearchResults = SearchPageObject.getAmountOfFoundAticles();
-
-        Assert.assertTrue(
-                "Found to few results",
-                amounOfSearchResults > 0
-        );
-    }
-
-    @Test
-    public void testNoResultsFounds()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        String searchLine = "zxcvasdfqwer";
-        SearchPageObject.typeSearchLine(searchLine);
-        SearchPageObject.waitEmptyResultsLabel();
-        SearchPageObject.assertThereNoResultOfSearch();
-    }
-
-    @Test
-    public void testChangeScreenOrientationOnSearchResults()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
-
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
-        String tittleBeforeRotation = ArticlePageObject.getArticleTitle();
-        //поворачиваем первый раз
-        this.rotateScreenLandscape();
-        String tittleAfterRotation = ArticlePageObject.getArticleTitle();
-
-        Assert.assertEquals(
-                "Article tittle have been changed after screen rotation",
-                tittleBeforeRotation,
-                tittleAfterRotation
-        );
-        //поворачиваем второй раз
-        this.rotateScreenPortrait();
-        String tittleAfterSecondRotation = ArticlePageObject.getArticleTitle();
-
-        Assert.assertEquals(
-                "Article tittle have been changed after second screen rotation",
-                tittleBeforeRotation,
-                tittleAfterSecondRotation
-        );
-
-        /*
-        MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input",
-                5
-        );
-
-        String searchLine = "Java";
-
-        MainPageObject.waitElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                searchLine,
-                "Cannot find search input",
-                5
-        );
-
-        MainPageObject.waitElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find 'Object-oriented programming language' searching by " + searchLine,
-                15
-        );
-
-        String tittleBeforeRotation = MainPageObject.waitElementAndGetAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "text",
-                "Cannot find tittle of article",
-                20
-        );
-
-        //System.out.println("Title before rotation is: " + tittleBeforeRotation);
-
-        driver.rotate(ScreenOrientation.LANDSCAPE);
-
-        String tittleAfterRotation = MainPageObject.waitElementAndGetAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "text",
-                "Cannot find tittle of article",
-                15
-        );
-
-        Assert.assertEquals(
-                "Article tittle have been changed after screen rotation",
-                tittleBeforeRotation,
-                tittleAfterRotation
-        );
-
-        driver.rotate(ScreenOrientation.PORTRAIT);
-
-        String tittleAfterSecondRotation = MainPageObject.waitElementAndGetAttribute(
-                By.id("org.wikipedia:id/view_page_title_text"),
-                "text",
-                "Cannot find tittle of article",
-                15
-        );
-
-        Assert.assertEquals(
-                "Article tittle have been changed after second screen rotation",
-                tittleBeforeRotation,
-                tittleAfterSecondRotation
-        );*/
-    }
-
-    @Test
-    public void testCheckSearchArticleInBackground()
-    {
-        SearchPageObject SearchPageObject = new SearchPageObject(driver);
-
-        SearchPageObject.initSearchInput();
-        SearchPageObject.typeSearchLine("Java");
-        SearchPageObject.waitSearchResult("Object-oriented programming language");
-        this.backgroundApp(2);
-        SearchPageObject.waitSearchResult("Object-oriented programming language");
-
-        /*MainPageObject.waitElementAndClick(
-                By.id("org.wikipedia:id/search_container"),
-                "Cannot find 'Search Wikipedia' input",
-                5
-        );
-
-        MainPageObject.waitElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                "Java",
-                "Cannot find search input",
-                5
-        );
-
-        MainPageObject.waitElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find 'Object-oriented programming language",
-                5
-        );
-
-        driver.runAppInBackground(2);
-
-        MainPageObject.waitElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']//*[@text='Object-oriented programming language']"),
-                "Cannot find 'Object-oriented programming language' article after returning from background",
-                5
-        );*/
     }
 
     @Test
@@ -530,7 +287,7 @@ public class FirstTest extends CoreTestCase {
                 10
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 "We see unexpected tittle!",
                 second_acticle_name,
                 articleTittle
