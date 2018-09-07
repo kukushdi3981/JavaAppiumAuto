@@ -42,4 +42,20 @@ public class ArticleTests extends CoreTestCase {
 
     }
 
+    @Test
+    public void test_ex6_AssertArticleTitle()
+    {
+        SearchPageObject SearchPageObject = new SearchPageObject(driver);
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine("Java");
+        SearchPageObject.clickByArticleSubstring("Object-oriented programming language");
+
+        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        //раскоментировать последующую строку для успешности теста (для ожидания Article)
+        //ArticlePageObject.waitTitleElement();
+        ArticlePageObject.checkAppearTitleElement();
+
+    }
+
 }

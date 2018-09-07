@@ -16,7 +16,7 @@ public class MyListsPageObject extends MainPageObject{
 
     private static String getSavedArticleXPath(String article_title)
     {
-        return FOLDER_BY_NAME_TPL.replace("{TITLE}", article_title);
+        return ARTICLE_TITLE_TPL.replace("{TITLE}", article_title);
     }
 
     public MyListsPageObject(AppiumDriver driver)
@@ -53,6 +53,20 @@ public class MyListsPageObject extends MainPageObject{
                 By.xpath(article_xpath),"Cannot find saved article in My reading list");
 
         this.waitArticleToDisappearByTitle(article_title);
+    }
+
+    public void checkArticlePresentInList(String article_name)
+    {
+        String article_element_xpath = getSavedArticleXPath(article_name);
+        this.waitElementPresent(
+                By.xpath(article_element_xpath),
+                "Cannot find '" + article_name + "' article in My reading list");
+    }
+
+    public void openArticleByTitle(String article_title)
+    {
+        String article_xpath = getSavedArticleXPath(article_title);
+        this.waitElementAndClick(By.xpath(article_xpath), "Cannot find '" + article_title + "' article in My reading list", 5);
     }
 
 }
